@@ -5,6 +5,7 @@ import Select from "react-select";
 
 function App() {
   const [tasks, setTasks] = useState([]);
+  const [unsaved_tasks, setUnsavedTasks] = useState([]);
 
   const sendRequest = (
     params = {
@@ -43,6 +44,7 @@ function App() {
       })
       .catch((e) => {
         console.log(e);
+        alert("Something went wrong!");
       });
   };
 
@@ -58,6 +60,20 @@ function App() {
   useEffect(() => {
     getTasks();
   }, []);
+
+  const updateLocalTask = (task) => {
+    let updated_task = { ...task };
+    let new_unsaved_tasks = unsaved_tasks;
+    let new_tasks = [...tasks].map((old_task) => {
+      if (old_task.id == updated_task.id) {
+        new_unsaved_tasks.push(updated_task.id);
+        return updated_task;
+      } else return old_task;
+    });
+
+    setTasks([...new_tasks]);
+    setUnsavedTasks([...new_unsaved_tasks]);
+  };
 
   const renderTask = (task) => {
     return (
@@ -82,25 +98,21 @@ function App() {
               placeholder={"Enter Task Text"}
               value={task.text || ""}
               style={{
-                width: "200px",
+                width: "500px",
                 height: "30px",
                 borderRadius: "4px",
                 border: "1px solid rgb(204, 204, 204)",
                 padding: "0px 10px",
               }}
               onChange={(e) => {
-                sendRequest({
-                  type: "PUT",
-                  callback: () => {
-                    getTasks();
-                  },
-                  url: `https://api.interview.flowmapp.com/tasks/${task.id}`,
-                  body: {
-                    text: e.target.value,
-                    done: task.done,
-                    sort: task.sort,
-                  },
-                });
+                let updated_task = {
+                  text: e.target.value,
+                  done: task.done,
+                  sort: task.sort,
+                  id: task.id,
+                };
+
+                updateLocalTask(updated_task);
               }}
             />
           </div>
@@ -115,18 +127,14 @@ function App() {
                     : { value: 0, label: "To Do" }
                 }
                 onChange={(selectedOption) => {
-                  sendRequest({
-                    type: "PUT",
-                    callback: () => {
-                      getTasks();
-                    },
-                    url: `https://api.interview.flowmapp.com/tasks/${task.id}`,
-                    body: {
-                      done: selectedOption.value,
-                      text: task.text,
-                      sort: task.sort,
-                    },
-                  });
+                  let updated_task = {
+                    done: selectedOption.value,
+                    text: task.text,
+                    sort: task.sort,
+                    id: task.id,
+                  };
+
+                  updateLocalTask(updated_task);
                 }}
                 options={[
                   { value: 0, label: "To Do" },
@@ -139,6 +147,9 @@ function App() {
         <div>
           <div>{task.id != 1 && renderRemoveBtn(task.id)}</div>
           <div>{task.id != 1 && renderChangeBtn(task.id)}</div>
+          <div>
+            {unsaved_tasks.includes(task.id) && renderSaveChangesBtn(task.id)}
+          </div>
         </div>
       </div>
     );
@@ -200,6 +211,32 @@ function App() {
         }}
       >
         Change Task
+      </button>
+    );
+  };
+
+  const renderSaveChangesBtn = (id) => {
+    return (
+      <button
+        onClick={() => {
+          let updated_local_task = tasks.find((task) => task.id == id);
+          console.log("updated_local_task", updated_local_task);
+          sendRequest({
+            type: "PUT",
+            callback: () => {
+              let new_unsaved_tasks = [...unsaved_tasks].filter(
+                (unsaved_task_id) => unsaved_task_id != id
+              );
+
+              setUnsavedTasks([...new_unsaved_tasks]);
+              alert("Task was saved successfuly!");
+            },
+            url: `https://api.interview.flowmapp.com/tasks/${id}`,
+            body: { ...updated_local_task },
+          });
+        }}
+      >
+        Save Changes
       </button>
     );
   };
