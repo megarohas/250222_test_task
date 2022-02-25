@@ -66,7 +66,7 @@ function App() {
         style={{
           border: "1px solid black",
           padding: "0px 10px",
-          margin: "0px 10px 5px 10px",
+          margin: "0px 0px 5px 0px",
         }}
       >
         {task.text}
@@ -137,7 +137,7 @@ function App() {
   };
 
   return (
-    <div>
+    <div style={{ padding: "20px" }}>
       {renderAddBtn()}
       <div>Tasks amount: {tasks.length}</div>
       {renderTasks()}
