@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 import { DebounceInput } from "react-debounce-input";
+import Select from "react-select";
 
 function App() {
   const [tasks, setTasks] = useState([]);
@@ -64,7 +65,7 @@ function App() {
         key={`${task.text}${task.id}`}
         style={{
           border: "1px solid black",
-          padding: "0px 10px",
+          padding: "10px 10px",
           margin: "0px 0px 5px 0px",
           display: "flex",
           justifyContent: "space-between",
@@ -72,8 +73,8 @@ function App() {
         }}
       >
         <div>
-          <div>{`Task ID: ${task.id}`}</div>
-          <div>
+          <div style={{ marginBottom: "3px" }}>{`Task ID: ${task.id}`}</div>
+          <div style={{ marginBottom: "3px" }}>
             {`Task Text:`}{" "}
             <DebounceInput
               minLength={2}
@@ -88,14 +89,46 @@ function App() {
                     getTasks();
                   },
                   url: `https://api.interview.flowmapp.com/tasks/${task.id}`,
-                  body: { text: e.target.value, done: 0, sort: 0 },
+                  body: {
+                    text: e.target.value,
+                    done: task.done,
+                    sort: task.sort,
+                  },
                 });
               }}
             />
           </div>
-          <div>{`Task Status: ${
-            task.done && task.done > 0 ? "Done" : "In Progress"
-          }`}</div>
+          <div style={{ display: "flex", marginBottom: "3px" }}>
+            {`Task Status:`}{" "}
+            <div style={{ width: "200px", marginLeft: "5px" }}>
+              <Select
+                style={{ width: "100px" }}
+                value={
+                  task.done > 0
+                    ? { value: 1, label: "Done" }
+                    : { value: 0, label: "To Do" }
+                }
+                onChange={(selectedOption) => {
+                  sendRequest({
+                    type: "PUT",
+                    callback: () => {
+                      getTasks();
+                    },
+                    url: `https://api.interview.flowmapp.com/tasks/${task.id}`,
+                    body: {
+                      done: selectedOption.value,
+                      text: task.text,
+                      sort: task.sort,
+                    },
+                  });
+                }}
+                options={[
+                  { value: 0, label: "To Do" },
+                  { value: 1, label: "Done" },
+                ]}
+              />
+            </div>
+          </div>
         </div>
         <div>
           <div>{task.id != 1 && renderRemoveBtn(task.id)}</div>
