@@ -41,13 +41,7 @@ const Task = ({
               padding: "0px 10px",
             }}
             onChange={(e) => {
-              let updated_task = {
-                text: e.target.value,
-                done: task.done,
-                sort: task.sort,
-                id: task.id,
-              };
-
+              let updated_task = { ...task, text: e.target.value };
               updateLocalTask(updated_task);
             }}
           />
@@ -63,13 +57,7 @@ const Task = ({
                   : { value: 0, label: "To Do" }
               }
               onChange={(selectedOption) => {
-                let updated_task = {
-                  done: selectedOption.value,
-                  text: task.text,
-                  sort: task.sort,
-                  id: task.id,
-                };
-
+                let updated_task = { ...task, done: selectedOption.value };
                 updateLocalTask(updated_task);
               }}
               options={[
