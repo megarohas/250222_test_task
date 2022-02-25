@@ -27,7 +27,6 @@ function App() {
       })
       .then((response) => {
         let result = {};
-        console.log("response", response);
         try {
           result = JSON.parse(response);
         } catch (e) {
@@ -38,7 +37,6 @@ function App() {
         }
       })
       .then((data) => {
-        console.log("data", data);
         params.callback(data);
       })
       .catch((e) => {
@@ -67,11 +65,20 @@ function App() {
           border: "1px solid black",
           padding: "0px 10px",
           margin: "0px 0px 5px 0px",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
         }}
       >
-        {task.text}
-        {renderRemoveBtn(task.id)}
-        {renderChangeBtn(task.id)}
+        <div>
+          <div>{`Task ID: ${task.id}`}</div>
+          <div>{`Task Text: ${task.text || ""}`}</div>
+          <div>{`Task Status: ${task.done > 0 ? "Done" : "In Progress"}`}</div>
+        </div>
+        <div>
+          {task.id != 1 && renderRemoveBtn(task.id)}
+          {task.id != 1 && renderChangeBtn(task.id)}
+        </div>
       </div>
     );
   };
@@ -127,7 +134,7 @@ function App() {
               getTasks();
             },
             url: `https://api.interview.flowmapp.com/tasks/${id}`,
-            body: { text: "blah", done: 0, sort: 0 },
+            body: { text: "blah", done: 1, sort: 0 },
           });
         }}
       >
