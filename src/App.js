@@ -146,7 +146,6 @@ function App() {
         </div>
         <div>
           <div>{task.id != 1 && renderRemoveBtn(task.id)}</div>
-          <div>{task.id != 1 && renderChangeBtn(task.id)}</div>
           <div>
             {unsaved_tasks.includes(task.id) && renderSaveChangesBtn(task.id)}
           </div>
@@ -185,7 +184,9 @@ function App() {
           sendRequest({
             type: "DELETE",
             callback: () => {
-              getTasks();
+              let new_tasks = [...tasks].filter((task) => task.id != id);
+              setTasks([...new_tasks]);
+              alert("Task was saved successfuly!");
             },
             url: `https://api.interview.flowmapp.com/tasks/${id}`,
           });
@@ -202,9 +203,7 @@ function App() {
         onClick={() => {
           sendRequest({
             type: "PUT",
-            callback: () => {
-              getTasks();
-            },
+            callback: () => {},
             url: `https://api.interview.flowmapp.com/tasks/${id}`,
             body: { text: "blah", done: 1, sort: 0 },
           });
@@ -227,7 +226,6 @@ function App() {
               let new_unsaved_tasks = [...unsaved_tasks].filter(
                 (unsaved_task_id) => unsaved_task_id != id
               );
-
               setUnsavedTasks([...new_unsaved_tasks]);
               alert("Task was saved successfuly!");
             },
