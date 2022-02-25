@@ -9,6 +9,10 @@ import Task from "./components/task";
 function App() {
   const [tasks, setTasks] = useState([]);
   const [unsaved_tasks, setUnsavedTasks] = useState([]);
+  useEffect(() => {
+    getTasks();
+  }, []);
+
   const getTasks = () => {
     sendRequest({
       callback: (data) => {
@@ -17,10 +21,6 @@ function App() {
       url: "https://api.interview.flowmapp.com/tasks",
     });
   };
-
-  useEffect(() => {
-    getTasks();
-  }, []);
 
   const updateLocalTask = (task) => {
     let updated_task = { ...task };
