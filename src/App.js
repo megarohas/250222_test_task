@@ -81,7 +81,13 @@ function App() {
               debounceTimeout={500}
               placeholder={"Enter Task Text"}
               value={task.text || ""}
-              style={{ width: "200px" }}
+              style={{
+                width: "200px",
+                height: "30px",
+                borderRadius: "4px",
+                border: "1px solid rgb(204, 204, 204)",
+                padding: "0px 10px",
+              }}
               onChange={(e) => {
                 sendRequest({
                   type: "PUT",
