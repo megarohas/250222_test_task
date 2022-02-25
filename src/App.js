@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import "./App.css";
+import { DebounceInput } from "react-debounce-input";
 
 function App() {
   const [tasks, setTasks] = useState([]);
@@ -72,12 +73,33 @@ function App() {
       >
         <div>
           <div>{`Task ID: ${task.id}`}</div>
-          <div>{`Task Text: ${task.text || ""}`}</div>
-          <div>{`Task Status: ${task.done > 0 ? "Done" : "In Progress"}`}</div>
+          <div>
+            {`Task Text:`}{" "}
+            <DebounceInput
+              minLength={2}
+              debounceTimeout={500}
+              placeholder={"Enter Task Text"}
+              value={task.text || ""}
+              style={{ width: "200px" }}
+              onChange={(e) => {
+                sendRequest({
+                  type: "PUT",
+                  callback: () => {
+                    getTasks();
+                  },
+                  url: `https://api.interview.flowmapp.com/tasks/${task.id}`,
+                  body: { text: e.target.value, done: 0, sort: 0 },
+                });
+              }}
+            />
+          </div>
+          <div>{`Task Status: ${
+            task.done && task.done > 0 ? "Done" : "In Progress"
+          }`}</div>
         </div>
         <div>
-          {task.id != 1 && renderRemoveBtn(task.id)}
-          {task.id != 1 && renderChangeBtn(task.id)}
+          <div>{task.id != 1 && renderRemoveBtn(task.id)}</div>
+          <div>{task.id != 1 && renderChangeBtn(task.id)}</div>
         </div>
       </div>
     );
