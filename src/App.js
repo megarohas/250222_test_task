@@ -9,18 +9,16 @@ function App() {
       type: "GET",
       callback: () => {},
       body: undefined,
-      url: "",
-      mode: "no-cors",
+      url: "https://api.interview.flowmapp.com/tasks",
+      mode: "cors",
     }
   ) => {
-    console.log("params", params);
     let config = {
       method: params.type,
       mode: params.mode,
       body: JSON.stringify(params.body),
       headers: {
         "Content-Type": "application/json",
-        // 'Content-Type': 'application/x-www-form-urlencoded',
       },
     };
     fetch(params.url, config)
@@ -44,7 +42,6 @@ function App() {
         params.callback(data);
       })
       .catch((e) => {
-        console.log("help");
         console.log(e);
       });
   };
@@ -55,7 +52,6 @@ function App() {
         setTasks(data);
       },
       url: "https://api.interview.flowmapp.com/tasks",
-      mode: "cors",
     });
   };
 
@@ -84,21 +80,18 @@ function App() {
     return tasks.map((task) => renderTask(task));
   };
 
-  const addOneMoreTask = () => {
-    sendRequest({
-      type: "POST",
-      callback: () => {
-        getTasks();
-      },
-      url: "https://api.interview.flowmapp.com/tasks",
-    });
-  };
-
   const renderAddBtn = () => {
     return (
       <button
         onClick={() => {
-          addOneMoreTask();
+          sendRequest({
+            type: "POST",
+            mode: "no-cors",
+            callback: () => {
+              getTasks();
+            },
+            url: "https://api.interview.flowmapp.com/tasks",
+          });
         }}
       >
         Add One More Task
@@ -106,43 +99,36 @@ function App() {
     );
   };
 
-  const removeTask = (id) => {
-    sendRequest({
-      type: "DELETE",
-      callback: () => {
-        getTasks();
-      },
-      url: `https://api.interview.flowmapp.com/tasks/${id}`,
-    });
-  };
-
-  const changeTask = (id) => {
-    sendRequest({
-      type: "PUT",
-      callback: () => {
-        getTasks();
-      },
-      url: `https://api.interview.flowmapp.com/tasks/${id}`,
-      body: { text: "blah", done: 0, sort: 0 },
-    });
-  };
-
   const renderRemoveBtn = (id) => {
     return (
       <button
         onClick={() => {
-          removeTask(id);
+          sendRequest({
+            type: "DELETE",
+            callback: () => {
+              getTasks();
+            },
+            url: `https://api.interview.flowmapp.com/tasks/${id}`,
+          });
         }}
       >
         Remove Task
       </button>
     );
   };
+
   const renderChangeBtn = (id) => {
     return (
       <button
         onClick={() => {
-          changeTask(id);
+          sendRequest({
+            type: "PUT",
+            callback: () => {
+              getTasks();
+            },
+            url: `https://api.interview.flowmapp.com/tasks/${id}`,
+            body: { text: "blah", done: 0, sort: 0 },
+          });
         }}
       >
         Change Task
